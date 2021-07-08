@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: customerdc
+  namespace: secure-authc
+  labels:
+     app: customerdc
+spec:
+  ports:
+  - name: web
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    deployment-config.name: customerdc
+  type: ClusterIP
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: customer-dc-vservice
+  namespace: secure-authc
+spec:
+  gateways:
+  - customer-gateway-secure-authc
+  hosts:
+  - '*'
+  http:
+  - match:
+    - uri:
+        prefix: /secure-authc
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: customerdc
+        port:
+          number: 8080
