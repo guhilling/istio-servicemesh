@@ -1,0 +1,19 @@
+apiVersion: "security.istio.io/v1beta1"
+kind: "AuthorizationPolicy"
+metadata:
+  name: "demo-policy"
+spec:
+  selector:
+    matchLabels:
+      app: customer
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        ipBlocks: ["10.128.3.0/24"]
+        namespaces: ["secure-authc"]
+    to:
+    - operation:
+        methods: ["GET"]
+        ports: ["8080"]
+        paths: ["/customer"]
